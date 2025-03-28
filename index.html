@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>星空助眠 - B站风格助眠视频平台</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --bilibili-pink: #FB7299;
+      --bilibili-blue: #23ADE5;
+      --dark-color: #181818;
+      --light-color: #F4F4F4;
+      --text-color: #212121;
+      --text-light: #999;
+      --card-bg: #fff;
+      --glass-bg: rgba(255, 255, 255, 0.08);
+      
+      /* 新增助眠主题色 */
+      --sleep-purple: #A78BFA;
+      --sleep-blue: #7DD3FC;
+      --sleep-dark: #0F172A;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--sleep-dark);
+      color: var(--light-color);
+      line-height: 1.6;
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="20" cy="20" r="1" fill="white" opacity="0.7"/><circle cx="50" cy="30" r="1" fill="white" opacity="0.5"/><circle cx="80" cy="20" r="1" fill="white" opacity="0.8"/><circle cx="10" cy="50" r="1" fill="white" opacity="0.6"/><circle cx="90" cy="60" r="1" fill="white" opacity="0.4"/><circle cx="30" cy="80" r="1" fill="white" opacity="0.7"/><circle cx="70" cy="90" r="1" fill="white" opacity="0.5"/></svg>');
+      background-size: 200px;
+    }
+    
+    /* 毛玻璃导航栏 */
+    nav {
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding: 0.8rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .nav-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      color: white;
+      font-size: 1.5rem;
+      font-weight: bold;
+      text-decoration: none;
+    }
+    
+    .logo-icon {
+      margin-right: 10px;
+      color: var(--bilibili-pink);
+    }
+    
+    .search-bar {
+      flex-grow: 1;
+      max-width: 400px;
+      margin: 0 2rem;
+      position: relative;
+    }
+    
+    .search-bar input {
+      width: 100%;
+      padding: 0.6rem 1rem;
+      border-radius: 20px;
+      border: none;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+    }
+    
+    .search-bar input:focus {
+      outline: none;
+      background: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 0 0 2px var(--bilibili-blue);
+    }
+    
+    .search-bar i {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-light);
+    }
+    
+    .nav-links {
+      display: flex;
+      list-style: none;
+    }
+    
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      margin: 0 0.2rem;
+      border-radius: 4px;
+      transition: all 0.3s ease;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+    }
+    
+    .nav-links a i {
+      margin-right: 5px;
+    }
+    
+    .nav-links a:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--bilibili-pink);
+    }
+    
+    .user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      margin-left: 1rem;
+      object-fit: cover;
+      border: 2px solid var(--bilibili-pink);
+    }
+    
+    .hamburger {
+      display: none;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+      margin-left: 1rem;
+    }
+    
+    /* 主要内容容器 */
+    .main-container {
+      max-width: 1400px;
+      margin: 1.5rem auto;
+      padding: 0 1.5rem;
+    }
+    
+    /* 分类标签 */
+    .category-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      margin: 1.5rem 0;
+    }
+    
+    .tag {
+      padding: 0.4rem 1rem;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .tag::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 5px;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.4);
+      opacity: 0;
+      border-radius: 100%;
+      transform: scale(1, 1) translate(-50%, -50%);
+      transform-origin: 50% 50%;
+    }
+    
+    .tag:hover {
+      background: var(--bilibili-pink);
+      transform: translateY(-2px);
+    }
+    
+    .tag.active {
+      background: var(--bilibili-pink);
+      font-weight: bold;
+    }
+    
+    .tag:active::after {
+      animation: ripple 0.6s ease-out;
+    }
+    
+    @keyframes ripple {
+      0% {
+        transform: scale(0, 0);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(20, 20);
+        opacity: 0;
+      }
+    }
+    
+    /* 视频卡片网格 */
+    .video-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+    
+    .video-card {
+      background: var(--card-bg);
+      border-radius: 8px;
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.2, 0.8, 0.4, 1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
+    
+    .video-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+    }
+    
+    .card-cover {
+      position: relative;
+      width: 100%;
+      padding-top: 56.25%; /* 16:9 比例 */
+      background: #eee;
+      overflow: hidden;
+    }
+    
+    .card-cover img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+    
+    .video-card:hover .card-cover img {
+      transform: scale(1.05);
+    }
+    
+    .play-button {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 50px;
+      height: 50px;
+      background: rgba(251, 114, 153, 0.8);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+    
+    .video-card:hover .play-button {
+      opacity: 1;
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(251, 114, 153, 0.7);
+      }
+      70% {
+        box-shadow: 0 0 0 12px rgba(251, 114, 153, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(251, 114, 153, 0);
+      }
+    }
+    
+    .card-info {
+      padding: 1rem;
+    }
+    
+    .card-title {
+      font-size: 0.95rem;
+      color: var(--text-color);
+      margin-bottom: 0.5rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      height: 2.8rem;
+    }
+    
+    .card-stats {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: var(--text-light);
+    }
+    
+    .card-stats span {
+      display: flex;
+      align-items: center;
+    }
+    
+    .card-stats i {
+      margin-right: 3px;
+      font-size: 0.7rem;
+    }
+    
+    /* 特色模块 */
+    .featured-section {
+      margin: 3rem 0;
+    }
+    
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    
+    .section-title {
+      font-size: 1.4rem;
+      font-weight: bold;
+      position: relative;
+      padding-left: 1rem;
+    }
+    
+    .section-title::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 4px;
+      height: 1.2rem;
+      background: var(--bilibili-pink);
+      border-radius: 2px;
+    }
+    
+    .view-more {
+      color: var(--bilibili-blue);
+      font-size: 0.9rem;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+    
+    .view-more:hover {
+      color: var(--bilibili-pink);
+    }
+    
+    /* 今日推荐轮播 */
+    .today-recommend {
+      position: relative;
+      height: 300px;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 2rem;
+      background-image: url('https://i0.hdslb.com/bfs/archive/3c5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a.jpg');
+      background-size: cover;
+      background-position: center;
+      transition: all 0.3s ease;
+    }
+    
+    .today-recommend:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    }
+    
+    .slide-content {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 2rem;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+      color: white;
+    }
+    
+    .slide-tag {
+      display: inline-block;
+      background: var(--bilibili-pink);
+      padding: 0.3rem 0.8rem;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      margin-bottom: 0.8rem;
+    }
+    
+    .slide-title {
+      font-size: 1.4rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .slide-desc {
+      font-size: 0.9rem;
+      opacity: 0.9;
+      margin-bottom: 1rem;
+    }
+    
+    .watch-now {
+      display: inline-flex;
+      align-items: center;
+      background: var(--bilibili-blue);
+      color: white;
+      padding: 0.5rem 1.2rem;
+      border-radius: 4px;
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+    }
+    
+    .watch-now:hover {
+      background: var(--bilibili-pink);
+      transform: translateY(-2px);
+    }
+    
+    .watch-now i {
+      margin-left: 5px;
+    }
+    
+    /* 睡眠统计 */
+    .sleep-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+    
+    .stat-card {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      padding: 1.5rem;
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+    }
+    
+    .stat-card:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateY(-5px);
+    }
+    
+    .stat-title {
+      font-size: 0.9rem;
+      color: var(--text-light);
+      margin-bottom: 0.5rem;
+    }
+    
+    .stat-value {
+      font-size: 1.8rem;
+      font-weight: bold;
+      margin-bottom: 1rem;
+    }
+    
+    .progress-container {
+      height: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 0.5rem;
+    }
+    
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(to right, var(--sleep-purple), var(--bilibili-blue));
+      border-radius: 3px;
+      transition: width 1.5s ease;
+    }
+    
+    .progress-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: var(--text-light);
+    }
+    
+    /* 页脚 */
+    footer {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 3rem 0 1.5rem;
+      margin-top: 3rem;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .footer-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+    }
+    
+    .footer-column h3 {
+      font-size: 1rem;
+      margin-bottom: 1.2rem;
+      color: white;
+      position: relative;
+      padding-bottom: 0.5rem;
+    }
+    
+    .footer-column h3::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 30px;
+      height: 2px;
+      background: var(--bilibili-pink);
+    }
+    
+    .footer-links {
+      list-style: none;
+    }
+    
+    .footer-links li {
+      margin-bottom: 0.6rem;
+    }
+    
+    .footer-links a {
+      color: var(--text-light);
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: color 0.3s ease;
+    }
+    
+    .footer-links a:hover {
+      color: var(--bilibili-pink);
+    }
+    
+    .social-links {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    
+    .social-links a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      color: white;
+      transition: all 0.3s ease;
+    }
+    
+    .social-links a:hover {
+      background: var(--bilibili-pink);
+      transform: translateY(-3px);
+    }
+    
+    .copyright {
+      text-align: center;
+      padding-top: 2rem;
+      margin-top: 2rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 0.8rem;
+      color: var(--text-light);
+    }
+    
+    /* 回到顶部按钮 */
+    .back-to-top {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 50px;
+      height: 50px;
+      background: var(--bilibili-pink);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      text-decoration: none;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+      z-index: 99;
+      box-shadow: 0 4px 12px rgba(251, 114, 153, 0.3);
+    }
+    
+    .back-to-top.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .back-to-top:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(251, 114, 153, 0.4);
+    }
+    
+    /* 响应式设计 */
+    @media (max-width: 1024px) {
+      .nav-links a span {
+        display: none;
+      }
+      
+      .nav-links a i {
+        margin-right: 0;
+        font-size: 1.1rem;
+      }
+      
+      .search-bar {
+        margin: 0 1rem;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+      }
+      
+      .hamburger {
+        display: block;
+      }
+      
+      .search-bar {
+        display: none;
+      }
+      
+      .video-grid {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      }
+      
+      .today-recommend {
+        height: 250px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .main-container {
+        padding: 0 1rem;
+      }
+      
+      .video-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .today-recommend {
+        height: 200px;
+      }
+      
+      .slide-content {
+        padding: 1.5rem;
+      }
+      
+      .slide-title {
+        font-size: 1.2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- 导航栏 -->
+  <nav>
+    <div class="nav-container">
+      <a href="#" class="logo">
+        <i class="fas fa-moon logo-icon"></i>
+        <span>星空助眠</span>
+      </a>
+      
+      <div class="search-bar">
+        <input type="text" placeholder="搜索助眠视频、ASMR、白噪音...">
+        <i class="fas fa-search"></i>
+      </div>
+      
+      <ul class="nav-links">
+        <li><a href="#"><i class="fas fa-home"></i><span>首页</span></a></li>
+        <li><a href="#"><i class="fas fa-list"></i><span>分类</span></a></li>
+        <li><a href="#"><i class="fas fa-heart"></i><span>收藏</span></a></li>
+        <li><a href="#"><i class="fas fa-history"></i><span>历史</span></a></li>
+      </ul>
+      
+      <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="用户头像" class="user-avatar">
+      <button class="hamburger">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+  </nav>
+
+  <!-- 主要内容 -->
+  <div class="main-container">
+    <!-- 分类标签 -->
+    <div class="category-tags">
+      <div class="tag active">全部</div>
+      <div class="tag">ASMR</div>
+      <div class="tag">白噪音</div>
+      <div class="tag">雨声</div>
+      <div class="tag">冥想</div>
+      <div class="tag">自然音</div>
+      <div class="tag">轻音乐</div>
+      <div class="tag">角色扮演</div>
+    </div>
+    
+    <!-- 今日推荐 - 已修改部分 -->
+    <section class="featured-section">
+      <div class="section-header">
+        <h2 class="section-title">今日助眠推荐</h2>
+        <a href="#" class="view-more">查看更多 <i class="fas fa-angle-right"></i></a>
+      </div>
+      
+      <div class="today-recommend"style="background-image: url('images/recommend_cover.jpg.png');">
+        <div class="slide-content">
+          <span class="slide-tag">热门推荐</span>
+          <h3 class="slide-title">【hopeful】超治愈助眠~小象为你化妆</h3>
+          <p class="slide-desc">可爱的小象角色与您互动，带来温暖治愈的体验，缓解一天的疲劳</p>
+          <a href="https://player.bilibili.com/player.html?bvid=BV1az4y1T7bV&vd_source=3e83426eb0ef842a9004eac7e20ad9a0" class="watch-now">立即观看 <i class="fas fa-play"></i></a>
+        </div>
+      </div>
+    </section>
+    
+    <!-- 视频网格 -->
+    <div class="video-grid">
+      <!-- 视频卡片1 -->
+      <div class="video-card">
+        <div class="card-cover">
+          <img src="images/haircut.jpg.png" alt="温柔理发师为你剪发">
+          <div class="play-button">
+            <i class="fas fa-play"></i>
+          </div>
+        </div>
+        <div class="card-info">
+          <h3 class="card-title">【ASMR】温柔理发师为你剪发 | 沉浸式体验</h3>
+          <div class="card-stats">
+            <span><i class="fas fa-play-circle"></i> 24.5万</span>
+            <span><i class="fas fa-clock"></i> 45:12</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 视频卡片2 -->
+      <div class="video-card">
+        <div class="card-cover">
+          <img src="images/library.jpg.png" alt="深夜图书馆">
+          <div class="play-button">
+            <i class="fas fa-play"></i>
+          </div>
+        </div>
+        <div class="card-info">
+          <h3 class="card-title">深夜图书馆 | 翻书声与铅笔写字声</h3>
+          <div class="card-stats">
+            <span><i class="fas fa-play-circle"></i> 18.2万</span>
+            <span><i class="fas fa-clock"></i> 1:02:30</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 视频卡片3 -->
+      <div class="video-card">
+        <div class="card-cover">
+          <img src="images/forest.jpg.png" alt="森林溪流">
+          <div class="play-button">
+            <i class="fas fa-play"></i>
+          </div>
+        </div>
+        <div class="card-info">
+          <h3 class="card-title">森林溪流 | 自然白噪音 8小时</h3>
+          <div class="card-stats">
+            <span><i class="fas fa-play-circle"></i> 56.7万</span>
+            <span><i class="fas fa-clock"></i> 8:00:00</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 视频卡片4 -->
+      <div class="video-card">
+        <div class="card-cover">
+          <img src="images/cat_cafe.jpg.png" alt="猫咪咖啡馆">
+          <div class="play-button">
+            <i class="fas fa-play"></i>
+          </div>
+        </div>
+        <div class="card-info">
+          <h3 class="card-title">【角色扮演】猫咪咖啡馆 | 耳语ASMR</h3>
+          <div class="card-stats">
+            <span><i class="fas fa-play-circle"></i> 32.1万</span>
+            <span><i class="fas fa-clock"></i> 1:15:45</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 睡眠统计 -->
+    <section class="featured-section">
+      <div class="section-header">
+        <h2 class="section-title">您的睡眠数据</h2>
+        <a href="#" class="view-more">查看详情 <i class="fas fa-angle-right"></i></a>
+      </div>
+      
+      <div class="sleep-stats">
+        <div class="stat-card">
+          <h4 class="stat-title">平均入睡时间</h4>
+          <div class="stat-value">23:42</div>
+          <div class="progress-container">
+            <div class="progress-bar" style="width: 75%"></div>
+          </div>
+          <div class="progress-info">
+            <span>比上周早12分钟</span>
+            <span>75%</span>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <h4 class="stat-title">平均睡眠时长</h4>
+          <div class="stat-value">6.8小时</div>
+          <div class="progress-container">
+            <div class="progress-bar" style="width: 68%"></div>
+          </div>
+          <div class="progress-info">
+            <span>比上周多0.5小时</span>
+            <span>68%</span>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <h4 class="stat-title">深度睡眠比例</h4>
+          <div class="stat-value">28%</div>
+          <div class="progress-container">
+            <div class="progress-bar" style="width: 28%"></div>
+          </div>
+          <div class="progress-info">
+            <span>理想值25-30%</span>
+            <span>28%</span>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- 更多视频 -->
+    <section class="featured-section">
+      <div class="section-header">
+        <h2 class="section-title">热门助眠视频</h2>
+        <a href="#" class="view-more">查看更多 <i class="fas fa-angle-right"></i></a>
+      </div>
+      
+      <div class="video-grid">
+        <!-- 视频卡片5 -->
+        <div class="video-card">
+          <div class="card-cover">
+            <img src="images/bamboo_rain.jpg.png" alt="雨打芭蕉">
+            <div class="play-button">
+              <i class="fas fa-play"></i>
+            </div>
+          </div>
+          <div class="card-info">
+            <h3 class="card-title">雨打芭蕉 | 中式庭院雨声</h3>
+            <div class="card-stats">
+              <span><i class="fas fa-play-circle"></i> 42.3万</span>
+              <span><i class="fas fa-clock"></i> 5:20:00</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 视频卡片6 -->
+        <div class="video-card">
+          <div class="card-cover">
+            <img src="images/starry_night.jpg.png" alt="星空下的耳语">
+            <div class="play-button">
+              <i class="fas fa-play"></i>
+            </div>
+          </div>
+          <div class="card-info">
+            <h3 class="card-title">【ASMR】星空下的耳语 | 3D环绕音效</h3>
+            <div class="card-stats">
+              <span><i class="fas fa-play-circle"></i> 38.6万</span>
+              <span><i class="fas fa-clock"></i> 1:08:20</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 视频卡片7 -->
+        <div class="video-card">
+          <div class="card-cover">
+            <img src="images/campfire.jpg.png" alt="助眠视频封面">
+            <div class="play-button">
+              <i class="fas fa-play"></i>
+            </div>
+          </div>
+          <div class="card-info">
+            <h3 class="card-title">篝火晚会 | 木柴燃烧声与虫鸣</h3>
+            <div class="card-stats">
+              <span><i class="fas fa-play-circle"></i> 29.4万</span>
+              <span><i class="fas fa-clock"></i> 6:45:00</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 视频卡片8 -->
+        <div class="video-card">
+          <div class="card-cover">
+            <img src="images/elf_library.jpg.png" alt="精灵图书馆员">
+            <div class="play-button">
+              <i class="fas fa-play"></i>
+            </div>
+          </div>
+          <div class="card-info">
+            <h3 class="card-title">【角色扮演】精灵图书馆员 | 翻书声ASMR</h3>
+            <div class="card-stats">
+              <span><i class="fas fa-play-circle"></i> 25.7万</span>
+              <span><i class="fas fa-clock"></i> 52:18</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- 页脚 -->
+  <footer>
+    <div class="footer-container">
+      <div class="footer-column">
+        <h3>关于我们</h3>
+        <ul class="footer-links">
+          <li><a href="#">关于星空助眠</a></li>
+          <li><a href="#">加入我们</a></li>
+          <li><a href="#">联系方式</a></li>
+          <li><a href="#">用户协议</a></li>
+          <li><a href="#">隐私政策</a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-column">
+        <h3>帮助中心</h3>
+        <ul class="footer-links">
+          <li><a href="#">常见问题</a></li>
+          <li><a href="#">使用指南</a></li>
+          <li><a href="#">反馈建议</a></li>
+          <li><a href="#">账号问题</a></li>
+          <li><a href="#">联系我们</a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-column">
+        <h3>内容分类</h3>
+        <ul class="footer-links">
+          <li><a href="#">ASMR</a></li>
+          <li><a href="#">白噪音</a></li>
+          <li><a href="#">自然声音</a></li>
+          <li><a href="#">冥想音乐</a></li>
+          <li><a href="#">角色扮演</a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-column">
+        <h3>关注我们</h3>
+        <div class="social-links">
+          <a href="#"><i class="fab fa-weibo"></i></a>
+          <a href="#"><i class="fab fa-bilibili"></i></a>
+          <a href="#"><i class="fab fa-weixin"></i></a>
+          <a href="#"><i class="fab fa-youtube"></i></a>
+        </div>
+      </div>
+    </div>
+    
+    <div class="copyright">
+      <p>&copy; 2023 星空助眠 - 让每一晚都安眠甜美 | 本网站仅供学习交流使用</p>
+    </div>
+  </footer>
+  
+  <!-- 回到顶部按钮 -->
+  <a href="#" class="back-to-top">
+    <i class="fas fa-arrow-up"></i>
+  </a>
+
+  <script>
+    // 导航栏响应式
+    const hamburger = document.querySelector('.hamburger');
+    const navLinks = document.querySelector('.nav-links');
+    
+    hamburger.addEventListener
